@@ -1,3 +1,6 @@
+// eslint-disable-next-line simple-import-sort/imports
+import './wdyr';
+
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
