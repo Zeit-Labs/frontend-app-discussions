@@ -11,21 +11,24 @@ import { Report } from '@edx/paragon/icons';
 import {
   selectModerationSettings, selectUserHasModerationPrivileges, selectUserIsGroupTa, selectUserIsStaff,
 } from '../data/selectors';
-import { commentShape } from '../post-comments/comments/comment/proptypes';
 import messages from '../post-comments/messages';
-import { postShape } from '../posts/post/proptypes';
 import AuthorLabel from './AuthorLabel';
 
 function AlertBanner({
   intl,
-  content,
+  author,
+  abuseFlagged,
+  lastEdit,
+  closed,
+  closedBy,
+  closeReason,
 }) {
   const userHasModerationPrivileges = useSelector(selectUserHasModerationPrivileges);
   const userIsGroupTa = useSelector(selectUserIsGroupTa);
   const userIsGlobalStaff = useSelector(selectUserIsStaff);
   const { reasonCodesEnabled } = useSelector(selectModerationSettings);
-  const userIsContentAuthor = getAuthenticatedUser().username === content.author;
-  const canSeeReportedBanner = content?.abuseFlagged;
+  const userIsContentAuthor = getAuthenticatedUser().username === author;
+  const canSeeReportedBanner = abuseFlagged;
   const canSeeLastEditOrClosedAlert = (userHasModerationPrivileges || userIsGroupTa
     || userIsGlobalStaff || userIsContentAuthor
   );
@@ -39,12 +42,12 @@ function AlertBanner({
       )}
       {reasonCodesEnabled && canSeeLastEditOrClosedAlert && (
         <>
-          {content.lastEdit?.reason && (
+          {lastEdit?.reason && (
             <Alert variant="info" className="px-3 shadow-none mb-1 py-10px bg-light-200">
               <div className="d-flex align-items-center flex-wrap text-gray-700 font-style">
                 {intl.formatMessage(messages.editedBy)}
                 <span className="ml-1 mr-3">
-                  <AuthorLabel author={content.lastEdit.editorUsername} linkToProfile postOrComment />
+                  <AuthorLabel author={lastEdit?.editorUsername} linkToProfile postOrComment />
                 </span>
                 <span
                   className="mx-1.5 font-size-8 font-style text-light-700"
@@ -52,16 +55,16 @@ function AlertBanner({
                 >
                   {intl.formatMessage(messages.fullStop)}
                 </span>
-                {intl.formatMessage(messages.reason)}:&nbsp;{content.lastEdit.reason}
+                {intl.formatMessage(messages.reason)}:&nbsp;{lastEdit.reason}
               </div>
             </Alert>
           )}
-          {content.closed && (
+          {closed && (
             <Alert variant="info" className="px-3 shadow-none mb-1 py-10px bg-light-200">
               <div className="d-flex align-items-center flex-wrap text-gray-700 font-style">
                 {intl.formatMessage(messages.closedBy)}
                 <span className="ml-1 ">
-                  <AuthorLabel author={content.closedBy} linkToProfile postOrComment />
+                  <AuthorLabel author={closedBy} linkToProfile postOrComment />
                 </span>
                 <span
                   className="mx-1.5 font-size-8 font-style text-light-700"
@@ -69,9 +72,7 @@ function AlertBanner({
                 >
                   {intl.formatMessage(messages.fullStop)}
                 </span>
-
-                {content.closeReason && (`${intl.formatMessage(messages.reason)}: ${content.closeReason}`)}
-
+                {closeReason && (`${intl.formatMessage(messages.reason)}: ${closeReason}`)}
               </div>
             </Alert>
           )}
@@ -83,7 +84,22 @@ function AlertBanner({
 
 AlertBanner.propTypes = {
   intl: intlShape.isRequired,
-  content: PropTypes.oneOfType([commentShape.isRequired, postShape.isRequired]).isRequired,
+  author: PropTypes.string.isRequired,
+  abuseFlagged: PropTypes.bool,
+  lastEdit: PropTypes.shape({
+    editorUsername: PropTypes.string,
+    reason: PropTypes.string,
+  }),
+  closed: PropTypes.bool.isRequired,
+  closedBy: PropTypes.string,
+  closeReason: PropTypes.string,
 };
 
-export default injectIntl(AlertBanner);
+AlertBanner.defaultProps = {
+  lastEdit: {},
+  abuseFlagged: false,
+  closedBy: undefined,
+  closeReason: undefined,
+};
+
+export default injectIntl(React.memo(AlertBanner));
