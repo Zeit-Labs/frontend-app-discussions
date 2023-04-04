@@ -85,12 +85,12 @@ function AlertBanner({
 AlertBanner.propTypes = {
   intl: intlShape.isRequired,
   author: PropTypes.string.isRequired,
-  abuseFlagged: PropTypes.bool,
+  closed: PropTypes.bool.isRequired,
   lastEdit: PropTypes.shape({
     editorUsername: PropTypes.string,
     reason: PropTypes.string,
   }),
-  closed: PropTypes.bool.isRequired,
+  abuseFlagged: PropTypes.bool,
   closedBy: PropTypes.string,
   closeReason: PropTypes.string,
 };
