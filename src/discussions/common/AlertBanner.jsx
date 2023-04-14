@@ -85,7 +85,7 @@ function AlertBanner({
 AlertBanner.propTypes = {
   intl: intlShape.isRequired,
   author: PropTypes.string.isRequired,
-  closed: PropTypes.bool.isRequired,
+  closed: PropTypes.bool,
   lastEdit: PropTypes.shape({
     editorUsername: PropTypes.string,
     reason: PropTypes.string,
@@ -98,6 +98,7 @@ AlertBanner.propTypes = {
 AlertBanner.defaultProps = {
   lastEdit: {},
   abuseFlagged: false,
+  closed: undefined,
   closedBy: undefined,
   closeReason: undefined,
 };
