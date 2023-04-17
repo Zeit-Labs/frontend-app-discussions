@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Alert } from '@edx/paragon';
 import { Report } from '@edx/paragon/icons';
 
@@ -14,15 +14,15 @@ import {
 import messages from '../post-comments/messages';
 import AuthorLabel from './AuthorLabel';
 
-function AlertBanner({
-  intl,
+const AlertBanner = ({
   author,
   abuseFlagged,
   lastEdit,
   closed,
   closedBy,
   closeReason,
-}) {
+}) => {
+  const intl = useIntl();
   const userHasModerationPrivileges = useSelector(selectUserHasModerationPrivileges);
   const userIsGroupTa = useSelector(selectUserIsGroupTa);
   const userIsGlobalStaff = useSelector(selectUserIsStaff);
@@ -80,27 +80,26 @@ function AlertBanner({
       )}
     </>
   );
-}
+};
 
 AlertBanner.propTypes = {
-  intl: intlShape.isRequired,
   author: PropTypes.string.isRequired,
+  abuseFlagged: PropTypes.bool,
   closed: PropTypes.bool,
+  closedBy: PropTypes.string,
+  closeReason: PropTypes.string,
   lastEdit: PropTypes.shape({
     editorUsername: PropTypes.string,
     reason: PropTypes.string,
   }),
-  abuseFlagged: PropTypes.bool,
-  closedBy: PropTypes.string,
-  closeReason: PropTypes.string,
 };
 
 AlertBanner.defaultProps = {
-  lastEdit: {},
   abuseFlagged: false,
   closed: undefined,
   closedBy: undefined,
   closeReason: undefined,
+  lastEdit: {},
 };
 
-export default injectIntl(React.memo(AlertBanner));
+export default React.memo(AlertBanner);
